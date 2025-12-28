@@ -2,4 +2,4 @@ interface ExampleWorkflowParmas {
   dataToPassIn;
 }
 
-interface Env extends Cloudflare.Env {}
+type Env = Cloudflare.Env;

@@ -2,13 +2,13 @@ import { cn } from "@workspace/ui/lib/utils";
 import { Button } from "@workspace/ui/components/button";
 import { Input } from "@workspace/ui/components/input";
 import { Avatar, AvatarFallback, AvatarImage } from "@workspace/ui/components/avatar";
-import { AccountDialog } from "@/components/auth/account-dialog";
-import { 
-  IconBell, 
-  IconSearch, 
-  IconMenu2
+import {
+  IconBell,
+  IconMenu2,
+  IconSearch
 } from "@tabler/icons-react";
 import { useState } from "react";
+import { AccountDialog } from "@/components/auth/account-dialog";
 import { authClient } from "@/lib/auth-client";
 
 interface HeaderProps {
@@ -19,11 +19,11 @@ interface HeaderProps {
 export function Header({ className, onMobileMenuToggle }: HeaderProps) {
   const [searchQuery, setSearchQuery] = useState("");
   const { data: session } = authClient.useSession();
-  
+
   const user = session?.user;
   const fallbackText = user?.name
     ? user.name.charAt(0).toUpperCase()
-    : user?.email?.charAt(0).toUpperCase() || "U";
+    : user?.email.charAt(0).toUpperCase() || "U";
 
   return (
     <header

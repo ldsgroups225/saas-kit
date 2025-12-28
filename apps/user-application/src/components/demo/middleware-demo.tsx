@@ -11,13 +11,13 @@ import {
 import { Badge } from "@workspace/ui/components/badge";
 import { Alert, AlertDescription } from "@workspace/ui/components/alert";
 import {
+  IconAlertCircle,
+  IconBolt,
+  IconCircleCheck,
+  IconCode,
   IconLoader2,
   IconPlayerPlay,
   IconServer,
-  IconBolt,
-  IconCircleCheck,
-  IconAlertCircle,
-  IconCode,
 } from "@tabler/icons-react";
 import { examplefunction } from "@/core/functions/example-functions";
 
@@ -54,7 +54,7 @@ export function MiddlewareDemo() {
             Server-Side Data Flow
           </h2>
           <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
-            See TanStack Start's middleware and server functions in action with
+            See TanStack Start&apos;s middleware and server functions in action with
             TanStack Query. Check your server logs to see the execution flow!
           </p>
         </div>
@@ -119,7 +119,7 @@ export function MiddlewareDemo() {
                     <Alert className="border-green-500 bg-green-200/10">
                       <IconCircleCheck className="w-4 h-4 text-green-800 dark:text-green-400" />
                       <AlertDescription className="text-green-700 dark:text-green-300">
-                        <strong>Success!</strong> Response: "{mutation.data}"
+                        <strong>Success!</strong> Response: &quot;{mutation.data}&quot;
                       </AlertDescription>
                     </Alert>
                   )}
@@ -129,7 +129,7 @@ export function MiddlewareDemo() {
                       <IconAlertCircle className="w-4 h-4 text-red-600" />
                       <AlertDescription className="text-red-800 dark:text-red-200">
                         <strong>Error:</strong>{" "}
-                        {mutation.error?.message || "Something went wrong"}
+                        {mutation.error.message || "Something went wrong"}
                       </AlertDescription>
                     </Alert>
                   )}
@@ -142,7 +142,7 @@ export function MiddlewareDemo() {
               <CardHeader>
                 <CardTitle className="flex items-center">
                   <IconCode className="w-5 h-5 mr-2 text-primary" />
-                  What's Happening
+                  What&apos;s Happening
                 </CardTitle>
                 <CardDescription>
                   The execution flow and server-side processing
@@ -196,7 +196,7 @@ export function MiddlewareDemo() {
                     <Alert>
                       <IconServer className="w-4 h-4" />
                       <AlertDescription>
-                        <strong>Check your server logs!</strong> You'll see
+                        <strong>Check your server logs!</strong> You&apos;ll see
                         console output from both the middleware and server
                         function execution.
                       </AlertDescription>

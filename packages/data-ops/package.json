@@ -1,6 +1,7 @@
 {
   "name": "@repo/data-ops",
   "version": "1.0.0",
+  "type": "module",
   "description": "Manage auth, database, schemas, and queries",
   "exports": {
     "./auth/*": {
@@ -25,7 +26,9 @@
     "better-auth:generate": "mkdir -p src/drizzle && npx @better-auth/cli@latest generate --config ./config/auth.ts --output ./src/drizzle/auth-schema.ts",
     "drizzle:generate": "drizzle-kit generate --config drizzle.config.ts",
     "drizzle:migrate": "drizzle-kit migrate --config drizzle.config.ts",
-    "drizzle:pull": "drizzle-kit pull --config drizzle.config.ts"
+    "drizzle:pull": "drizzle-kit pull --config drizzle.config.ts",
+    "typecheck": "tsc --noEmit",
+    "lint": "eslint . --max-warnings 0"
   },
   "keywords": [],
   "author": "",
@@ -44,8 +47,10 @@
   "devDependencies": {
     "@cloudflare/workers-types": "catalog:dev",
     "@types/better-sqlite3": "catalog:build",
+    "@workspace/eslint-config": "workspace:*",
     "dotenv": "catalog:dev",
     "drizzle-kit": "catalog:dev",
+    "eslint": "catalog:dev",
     "mysql2": "catalog:frontend",
     "postgres": "catalog:frontend",
     "tsc-alias": "catalog:build",

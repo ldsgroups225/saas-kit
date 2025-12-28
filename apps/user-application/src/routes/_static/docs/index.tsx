@@ -1,4 +1,4 @@
-import { createFileRoute, Link } from "@tanstack/react-router";
+import { Link, createFileRoute } from "@tanstack/react-router";
 import {
   Card,
   CardContent,
@@ -11,11 +11,11 @@ import { Button } from "@workspace/ui/components/button";
 import {
   IconArrowRight,
   IconBook,
-  IconDatabase,
+  IconCircleCheck,
   IconCreditCard,
+  IconDatabase,
   IconShieldCheck,
   IconSparkles,
-  IconCircleCheck,
 } from "@tabler/icons-react";
 
 export const Route = createFileRoute("/_static/docs/")({
@@ -307,7 +307,7 @@ function RouteComponent() {
 
           <div className="grid md:grid-cols-2 gap-6 mb-8 text-left max-w-3xl mx-auto">
             <div className="space-y-3">
-              <h3 className="font-semibold text-lg mb-2">What You'll Build</h3>
+              <h3 className="font-semibold text-lg mb-2">What You&apos;ll Build</h3>
               <div className="space-y-2">
                 <div className="flex items-start gap-2">
                   <IconCircleCheck className="w-5 h-5 text-primary mt-0.5" />

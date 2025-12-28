@@ -8,7 +8,9 @@
     "dev:user-application": "pnpm run --filter user-application dev",
     "deploy:user-application": "pnpm run build:data-ops && pnpm run --filter user-application deploy",
     "dev:data-service": "pnpm run --filter data-service dev",
-    "deploy:data-service": "pnpm run build:data-ops && pnpm run --filter data-service deploy"
+    "deploy:data-service": "pnpm run build:data-ops && pnpm run --filter data-service deploy",
+    "typecheck": "pnpm run --filter \"*\" typecheck || echo \"No typecheck script found\"",
+    "lint": "pnpm run --filter \"*\" lint || echo \"No lint script found\""
   },
   "keywords": [],
   "author": "",

@@ -8,7 +8,7 @@ import {
 import { Button } from "@workspace/ui/components/button";
 import { Badge } from "@workspace/ui/components/badge";
 import { IconCheck } from "@tabler/icons-react";
-import { Price, Product, Subscription } from "./types";
+import type { Price, Product, Subscription } from "./types";
 
 interface PricingCardProps {
   product: Product;
@@ -25,25 +25,25 @@ export function PricingCard({
 }: PricingCardProps) {
   const price = product.prices[0];
 
-  const formatPrice = (price: Price | undefined) => {
-    if (!price) return "Price unavailable";
-    if (price.type !== "recurring") {
+  const formatPrice = (priceObj: Price | undefined) => {
+    if (!priceObj) return "Price unavailable";
+    if (priceObj.type !== "recurring") {
       return "Currency not specified";
     }
 
-    if (price.amountType === "fixed" && price.priceAmount) {
+    if (priceObj.amountType === "fixed" && priceObj.priceAmount) {
       return new Intl.NumberFormat("en-US", {
         style: "currency",
-        currency: price.priceCurrency.toUpperCase(),
-      }).format(price.priceAmount / 100);
+        currency: priceObj.priceCurrency.toUpperCase(),
+      }).format(priceObj.priceAmount / 100);
     }
 
-    if (price.amountType === "custom") {
-      const min = price.minimumAmount ? price.minimumAmount / 100 : 0;
-      const max = price.maximumAmount ? price.maximumAmount / 100 : null;
+    if (priceObj.amountType === "custom") {
+      const min = priceObj.minimumAmount ? priceObj.minimumAmount / 100 : 0;
+      const max = priceObj.maximumAmount ? priceObj.maximumAmount / 100 : null;
       const formatter = new Intl.NumberFormat("en-US", {
         style: "currency",
-        currency: price.priceCurrency.toUpperCase(),
+        currency: priceObj.priceCurrency.toUpperCase(),
       });
 
       if (max) {

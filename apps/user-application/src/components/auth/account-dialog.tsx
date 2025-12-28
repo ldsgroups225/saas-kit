@@ -8,10 +8,10 @@ import {
   DialogTrigger,
 } from "@workspace/ui/components/dialog";
 import { Input } from "@workspace/ui/components/input";
-import { authClient } from "@/lib/auth-client";
 import { IconLogout, IconPalette } from "@tabler/icons-react";
 import { ThemeToggle } from "@workspace/ui/components/theme-toggle";
 import { useState } from "react";
+import { authClient } from "@/lib/auth-client";
 
 interface AccountDialogProps {
   children: React.ReactNode;
@@ -76,7 +76,7 @@ export function AccountDialog({ children }: AccountDialogProps) {
   const user = session.user;
   const fallbackText = user.name
     ? user.name.charAt(0).toUpperCase()
-    : user.email?.charAt(0).toUpperCase() || "U";
+    : user.email.charAt(0).toUpperCase() || "U";
 
   return (
     <Dialog>
@@ -109,7 +109,7 @@ export function AccountDialog({ children }: AccountDialogProps) {
                 <div className="text-sm font-medium">Verify your email</div>
                 {!verificationOtpSent ? (
                   <Button
-                    onClick={() => sendVerificationOtp(user.email!)}
+                    onClick={() => sendVerificationOtp(user.email)}
                     variant="outline"
                     size="sm"
                     className="w-full"
@@ -130,7 +130,7 @@ export function AccountDialog({ children }: AccountDialogProps) {
                       aria-label="Email verification code"
                     />
                     <Button
-                      onClick={() => verifyEmail(user.email!)}
+                      onClick={() => verifyEmail(user.email)}
                       size="sm"
                       className="w-full"
                       disabled={!verificationOtp || isVerifyingEmail}

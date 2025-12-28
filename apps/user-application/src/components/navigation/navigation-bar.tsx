@@ -1,6 +1,6 @@
 import * as React from "react";
 import { Link } from "@tanstack/react-router";
-import { IconMenu2, IconBrandGithub, IconExternalLink, IconLogin } from "@tabler/icons-react";
+import { IconBrandGithub, IconExternalLink, IconLogin, IconMenu2 } from "@tabler/icons-react";
 import { Button } from "@workspace/ui/components/button";
 import {
   Sheet,
@@ -12,9 +12,9 @@ import {
 } from "@workspace/ui/components/sheet";
 import { cn } from "@workspace/ui/lib/utils";
 import { ThemeToggle } from "@workspace/ui/components/theme-toggle";
+import { Avatar, AvatarFallback, AvatarImage } from "@workspace/ui/components/avatar";
 import { authClient } from "@/lib/auth-client";
 import { AccountDialog } from "@/components/auth/account-dialog";
-import { Avatar, AvatarFallback, AvatarImage } from "@workspace/ui/components/avatar";
 
 interface NavigationItem {
   label: string;
@@ -23,7 +23,7 @@ interface NavigationItem {
   scrollTo?: string;
 }
 
-const navigationItems: NavigationItem[] = [
+const navigationItems: Array<NavigationItem> = [
   { label: "Features", href: "/#features", scrollTo: "features" },
   {
     label: "Documentation",
@@ -52,7 +52,7 @@ export function NavigationBar() {
   const user = session?.user;
   const fallbackText = user?.name
     ? user.name.charAt(0).toUpperCase()
-    : user?.email?.charAt(0).toUpperCase() || "U";
+    : user?.email.charAt(0).toUpperCase() || "U";
 
   React.useEffect(() => {
     const handleScroll = () => {

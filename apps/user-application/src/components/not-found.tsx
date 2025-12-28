@@ -1,5 +1,5 @@
 import { Link } from "@tanstack/react-router";
-import { IconArrowLeft, IconHome, IconSearch, IconFileUnknown } from "@tabler/icons-react";
+import { IconArrowLeft, IconFileUnknown, IconHome, IconSearch } from "@tabler/icons-react";
 import { Button } from "@workspace/ui/components/button";
 import { Card, CardContent } from "@workspace/ui/components/card";
 
@@ -22,7 +22,7 @@ export function NotFound({ children }: { children?: any }) {
               <div className="text-muted-foreground">
                 {children || (
                   <p>
-                    The page you're looking for doesn't exist or has been moved.
+                    The page you&apos;re looking for doesn&apos;t exist or has been moved.
                   </p>
                 )}
               </div>
@@ -30,8 +30,8 @@ export function NotFound({ children }: { children?: any }) {
 
             {/* Actions */}
             <div className="flex flex-col sm:flex-row gap-3 w-full sm:w-auto">
-              <Button 
-                variant="default" 
+              <Button
+                variant="default"
                 onClick={() => window.history.back()}
                 className="flex items-center gap-2"
               >

@@ -1,13 +1,12 @@
 import { Link, rootRouteId, useMatch, useRouter } from "@tanstack/react-router";
-import type { ErrorComponentProps } from "@tanstack/react-router";
 import {
   IconAlertTriangle,
-  IconRefresh,
   IconArrowLeft,
-  IconHome,
-  IconChevronDown,
   IconBug,
+  IconChevronDown,
+  IconHome,
   IconMail,
+  IconRefresh,
 } from "@tabler/icons-react";
 import { Button } from "@workspace/ui/components/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@workspace/ui/components/card";
@@ -18,6 +17,7 @@ import {
   CollapsibleTrigger,
 } from "@workspace/ui/components/collapsible";
 import { useState } from "react";
+import type { ErrorComponentProps } from "@tanstack/react-router";
 
 export function DefaultCatchBoundary({ error }: ErrorComponentProps) {
   const router = useRouter();
@@ -30,8 +30,8 @@ export function DefaultCatchBoundary({ error }: ErrorComponentProps) {
   console.error(error);
 
   // Format error details for display
-  const errorMessage = error?.message || "An unexpected error occurred";
-  const errorStack = error?.stack || "";
+  const errorMessage = error.message || "An unexpected error occurred";
+  const errorStack = error.stack || "";
   const hasStack = errorStack.length > 0;
 
   const handleReportError = () => {

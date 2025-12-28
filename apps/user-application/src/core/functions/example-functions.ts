@@ -15,7 +15,7 @@ type ExampleInput = z.infer<typeof ExampleInputSchema>;
 
 export const examplefunction = baseFunction
   .inputValidator((data: ExampleInput) => ExampleInputSchema.parse(data))
-  .handler(async (ctx) => {
+  .handler((ctx) => {
     console.log("Executing example function");
     console.log(`The data passed: ${JSON.stringify(ctx.data)}`);
     console.log(`The context from middleware: ${JSON.stringify(ctx.context)}`);

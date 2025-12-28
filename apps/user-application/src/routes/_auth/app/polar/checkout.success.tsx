@@ -1,9 +1,9 @@
-import { collectSubscription, validPayment } from "@/core/functions/payments";
 import { useQuery } from "@tanstack/react-query";
 import { createFileRoute } from "@tanstack/react-router";
 import { z } from "zod";
 import { Button } from "@workspace/ui/components/button";
-import { IconCircleCheck, IconLoader2, IconAlertCircle } from "@tabler/icons-react";
+import { IconAlertCircle, IconCircleCheck, IconLoader2 } from "@tabler/icons-react";
+import { collectSubscription, validPayment } from "@/core/functions/payments";
 
 const searchSchema = z.object({
   checkout_id: z.string(),
@@ -12,7 +12,7 @@ const searchSchema = z.object({
 export const Route = createFileRoute("/_auth/app/polar/checkout/success")({
   component: RouteComponent,
   validateSearch: (search) => searchSchema.parse(search),
-  beforeLoad: async ({ search }) => {
+  beforeLoad: ({ search }) => {
     return search;
   },
   loader: async (input) => {
@@ -102,7 +102,7 @@ function RouteComponent() {
         return {
           title: "Processing Your Payment",
           description:
-            "We're verifying your payment details. This may take a few moments...",
+            "We&apos;re verifying your payment details. This may take a few moments...",
         };
     }
   };
