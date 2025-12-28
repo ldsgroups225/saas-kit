@@ -2,6 +2,90 @@ packages:
   - "packages/*"
   - "apps/*"
 
+catalogs:
+  build:
+    "@cloudflare/vite-plugin": ^1.19.0
+    "@types/better-sqlite3": ^7.6.13
+    "@types/node": ^24.10.4
+    "@types/react": ^19.2.7
+    "@types/react-dom": ^19.2.3
+    "@types/remark-prism": ^1.3.7
+    "@vitejs/plugin-react": ^5.1.2
+    tsc-alias: ^1.8.16
+    typescript: ^5.9.3
+    vite: ^7.3.0
+    vite-tsconfig-paths: ^6.0.3
+    wrangler: ^4.56.0
+  dev:
+    "@cloudflare/vitest-pool-workers": ^0.11.1
+    "@cloudflare/workers-types": ^4.20251225.0
+    "@eslint/js": ^9.39.2
+    "@tanstack/eslint-config": ^0.3.4
+    "@testing-library/dom": ^10.4.1
+    "@testing-library/react": ^16.3.1
+    "@typescript-eslint/eslint-plugin": ^8.50.0
+    "@typescript-eslint/parser": ^8.50.0
+    dotenv: ^17.2.3
+    drizzle-kit: ^0.31.8
+    eslint: ^9.39.2
+    eslint-config-prettier: ^9.1.2
+    eslint-plugin-only-warn: ^1.1.0
+    eslint-plugin-react: ^7.37.5
+    eslint-plugin-react-hooks: ^5.2.0
+    globals: ^15.15.0
+    jsdom: ^27.4.0
+    typescript-eslint: ^8.50.0
+    vitest: "~3.2.4"
+  frontend:
+    "@base-ui/react": ^1.0.0
+    "@fontsource-variable/inter": ^5.2.8
+    "@neondatabase/serverless": ^1.0.2
+    "@planetscale/database": ^1.19.0
+    "@polar-sh/better-auth": ^1.6.3
+    "@polar-sh/sdk": ^0.42.1
+    "@polar-sh/tanstack-start": ^0.4.3
+    "@radix-ui/react-avatar": ^1.1.11
+    "@radix-ui/react-collapsible": ^1.1.12
+    "@radix-ui/react-dialog": ^1.1.15
+    "@radix-ui/react-dropdown-menu": ^2.1.16
+    "@radix-ui/react-scroll-area": ^1.2.10
+    "@radix-ui/react-slot": ^1.2.4
+    "@tailwindcss/postcss": ^4.1.18
+    "@tailwindcss/typography": ^0.5.19
+    "@tailwindcss/vite": ^4.1.18
+    "@tanstack/react-query": ^5.90.12
+    "@tanstack/react-query-devtools": ^5.91.1
+    "@tanstack/react-router": ^1.144.0
+    "@tanstack/react-router-devtools": ^1.144.0
+    "@tanstack/react-router-ssr-query": ^1.144.0
+    "@tanstack/react-start": ^1.145.0
+    better-auth: ^1.4.9
+    better-sqlite3: ^12.5.0
+    class-variance-authority: ^0.7.1
+    clsx: ^2.1.1
+    drizzle-orm: ^0.45.1
+    highlight.js: ^11.11.1
+    hono: ^4.11.3
+    mysql2: ^3.16.0
+    next-themes: ^0.4.6
+    postgres: ^3.4.7
+    radix-ui: ^1.4.3
+    react: ^19.2.3
+    react-dom: ^19.2.3
+    react-markdown: ^10.1.0
+    rehype-highlight: ^7.0.2
+    remark-breaks: ^4.0.0
+    remark-gfm: ^4.0.1
+    shadcn: ^3.6.2
+    tailwind-merge: ^3.4.0
+    tailwindcss: ^4.1.18
+    tw-animate-css: ^1.4.0
+    web-vitals: ^5.1.0
+    zod: ^4.2.1
+  icons:
+    "@tabler/icons-react": ^3.36.0
+    react-icons: ^5.5.0
+
 onlyBuiltDependencies:
   - '@tailwindcss/oxide'
   - better-sqlite3

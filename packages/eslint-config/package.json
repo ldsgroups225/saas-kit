@@ -9,17 +9,17 @@
     "./tanstack-react": "./tanstack-react.js"
   },
   "devDependencies": {
-    "@eslint/js": "^9.39.2",
-    "@tanstack/eslint-config": "^0.3.4",
-    "@typescript-eslint/eslint-plugin": "^8.50.0",
-    "@typescript-eslint/parser": "^8.50.0",
-    "eslint": "^9.39.2",
-    "eslint-config-prettier": "^9.1.2",
-    "eslint-plugin-only-warn": "^1.1.0",
-    "eslint-plugin-react": "^7.37.5",
-    "eslint-plugin-react-hooks": "^5.2.0",
-    "globals": "^15.15.0",
-    "typescript": "^5.9.3",
-    "typescript-eslint": "^8.50.0"
+    "@eslint/js": "catalog:dev",
+    "@tanstack/eslint-config": "catalog:dev",
+    "@typescript-eslint/eslint-plugin": "catalog:dev",
+    "@typescript-eslint/parser": "catalog:dev",
+    "eslint": "catalog:dev",
+    "eslint-config-prettier": "catalog:dev",
+    "eslint-plugin-only-warn": "catalog:dev",
+    "eslint-plugin-react": "catalog:dev",
+    "eslint-plugin-react-hooks": "catalog:dev",
+    "globals": "catalog:dev",
+    "typescript": "catalog:build",
+    "typescript-eslint": "catalog:dev"
   }
 }

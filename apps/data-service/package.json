@@ -10,15 +10,15 @@
     "cf-typegen": "wrangler types --env-interface BaseEnv"
   },
   "devDependencies": {
-    "@cloudflare/vitest-pool-workers": "^0.11.1",
-    "@types/node": "^24.10.4",
-    "typescript": "^5.9.3",
-    "vitest": "~3.2.4",
-    "wrangler": "^4.54.0"
+    "@cloudflare/vitest-pool-workers": "catalog:dev",
+    "@types/node": "catalog:build",
+    "typescript": "catalog:build",
+    "vitest": "catalog:dev",
+    "wrangler": "catalog:build"
   },
   "dependencies": {
     "@repo/data-ops": "workspace:*",
-    "hono": "^4.11.3",
-    "zod": "^4.2.1"
+    "hono": "catalog:frontend",
+    "zod": "catalog:frontend"
   }
 }
