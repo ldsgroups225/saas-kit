@@ -7,8 +7,8 @@ import {
   CardTitle,
 } from "@workspace/ui/components/card";
 import { Input } from "@workspace/ui/components/input";
-import { authClient } from "@/lib/auth-client";
 import { useState } from "react";
+import { authClient } from "@/lib/auth-client";
 
 export function GoogleLogin() {
   const [email, setEmail] = useState("");

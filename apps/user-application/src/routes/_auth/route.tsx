@@ -1,9 +1,9 @@
-import { createFileRoute, Outlet } from "@tanstack/react-router";
+import { Outlet, createFileRoute } from "@tanstack/react-router";
+import { useState } from "react";
 import { Sidebar } from "@/components/layout/sidebar";
 import { Header } from "@/components/layout/header";
 import { GoogleLogin } from "@/components/auth/google-login";
 import { authClient } from "@/lib/auth-client";
-import { useState } from "react";
 
 export const Route = createFileRoute("/_auth")({
   component: RouteComponent,

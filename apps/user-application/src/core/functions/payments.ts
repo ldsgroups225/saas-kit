@@ -1,8 +1,8 @@
 import { createServerFn } from "@tanstack/react-start";
-import { protectedFunctionMiddleware } from "@/core/middleware/auth";
-import { polarMiddleware } from "@/core/middleware/polar";
 import z from "zod";
 import { getRequestIP } from "@tanstack/react-start/server";
+import { protectedFunctionMiddleware } from "@/core/middleware/auth";
+import { polarMiddleware } from "@/core/middleware/polar";
 
 export const baseFunction = createServerFn().middleware([
   protectedFunctionMiddleware,

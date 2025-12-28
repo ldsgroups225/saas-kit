@@ -1,5 +1,5 @@
 import { PricingCard } from "./pricing-card";
-import { Products, Subscription } from "./types";
+import type { Products, Subscription } from "./types";
 
 interface PricingGridProps {
   products: Products;

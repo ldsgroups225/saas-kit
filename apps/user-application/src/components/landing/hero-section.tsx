@@ -1,6 +1,6 @@
 import { Button } from "@workspace/ui/components/button";
 import { Badge } from "@workspace/ui/components/badge";
-import { IconArrowRight, IconBrandGithub, IconSparkles, IconBolt, IconShield } from "@tabler/icons-react";
+import { IconArrowRight, IconBolt, IconBrandGithub, IconShield, IconSparkles } from "@tabler/icons-react";
 import { Link } from "@tanstack/react-router";
 
 export function HeroSection() {

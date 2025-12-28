@@ -1,7 +1,7 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { protectedRequestMiddleware } from "@/core/middleware/auth";
 import { Polar } from "@polar-sh/sdk";
 import { env } from "cloudflare:workers";
+import { protectedRequestMiddleware } from "@/core/middleware/auth";
 
 export const Route = createFileRoute("/_auth/app/polar/portal")({
   server: {

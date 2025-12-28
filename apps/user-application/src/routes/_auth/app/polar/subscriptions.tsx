@@ -1,6 +1,6 @@
-import { getProducts, collectSubscription } from "@/core/functions/payments";
 import { createFileRoute } from "@tanstack/react-router";
 import { useSuspenseQuery } from "@tanstack/react-query";
+import { collectSubscription, getProducts } from "@/core/functions/payments";
 import { PricingGrid, useCheckout } from "@/components/payments/polar";
 
 export const Route = createFileRoute("/_auth/app/polar/subscriptions")({

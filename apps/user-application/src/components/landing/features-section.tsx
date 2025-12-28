@@ -1,13 +1,13 @@
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@workspace/ui/components/card"
 import { Badge } from "@workspace/ui/components/badge"
 import { 
-  IconRoute, 
-  IconDatabase, 
   IconBolt, 
-  IconShield, 
+  IconCode, 
+  IconDatabase, 
   IconPalette, 
-  IconCode,
+  IconRoute, 
   IconServer,
+  IconShield,
   IconStack
 } from "@tabler/icons-react"
 

@@ -8,10 +8,10 @@ import {
 import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
 import { TanStackRouterDevtools } from "@tanstack/react-router-devtools";
 import * as React from "react";
+import { ThemeProvider } from "@workspace/ui/components/theme-provider";
 import type { QueryClient } from "@tanstack/react-query";
 import { DefaultCatchBoundary } from "@/components/default-catch-boundary";
 import { NotFound } from "@/components/not-found";
-import { ThemeProvider } from "@workspace/ui/components/theme-provider";
 import appCss from "@/styles.css?url";
 import { seo } from "@/utils/seo";
 

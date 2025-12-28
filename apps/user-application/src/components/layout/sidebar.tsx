@@ -12,7 +12,7 @@ interface NavigationItem {
   badge?: string | number;
 }
 
-const navigationItems: NavigationItem[] = [
+const navigationItems: Array<NavigationItem> = [
   {
     name: "Dashboard",
     icon: IconHome,

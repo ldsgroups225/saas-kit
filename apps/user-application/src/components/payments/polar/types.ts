@@ -1,4 +1,4 @@
-import { getProducts, collectSubscription } from "@/core/functions/payments";
+import type { collectSubscription, getProducts } from "@/core/functions/payments";
 
 export type Products = Awaited<ReturnType<typeof getProducts>>;
 export type Product = Products[number];
