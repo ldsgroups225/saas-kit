@@ -36,6 +36,12 @@ pnpm run deploy:user-application
 pnpm run deploy:data-service
 ```
 
+## CI/CD
+
+- CI checks: `.github/workflows/ci.yml`
+- Deployment and environment promotion: `.github/workflows/deploy.yml`
+- Runbook: `docs/devops/cicd-and-promotion.md`
+
 ## Working with Individual Apps
 
 You can also navigate into any sub-application directory and work with it independently in your IDE:
