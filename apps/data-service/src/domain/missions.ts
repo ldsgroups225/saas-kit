@@ -12,6 +12,8 @@ export interface Mission {
   serviceDate: string;
   assignedVehicleId?: string;
   assignedDriverId?: string;
+  onTimeDeparture: boolean;
+  onTimeArrival: boolean;
   createdAt: string;
   updatedAt: string;
 }
@@ -34,6 +36,28 @@ export interface MissionExceptionEntry {
   timestamp: string;
 }
 
+export interface MissionKpiSnapshot {
+  completionRate: number;
+  onTimeDepartureRate: number;
+  onTimeArrivalRate: number;
+  activeMissionCount: number;
+  generatedAt: string;
+}
+
+export interface MissionKpiTrendPoint {
+  date: string;
+  totalMissions: number;
+  completionRate: number;
+  onTimeDepartureRate: number;
+  onTimeArrivalRate: number;
+}
+
+export interface MissionKpiSummary {
+  snapshot: MissionKpiSnapshot;
+  trends: MissionKpiTrendPoint[];
+  delayReasonMix: Record<MissionExceptionType, number>;
+}
+
 const lifecycleMap: Record<MissionStatus, MissionStatus[]> = {
   Draft: ["Assigned", "Cancelled"],
   Assigned: ["In Transit", "Cancelled"],
@@ -51,6 +75,8 @@ const seedMissions: Mission[] = [
     serviceDate: "2026-04-05",
     assignedVehicleId: "veh-101",
     assignedDriverId: "drv-ada",
+    onTimeDeparture: true,
+    onTimeArrival: false,
     createdAt: "2026-04-05T08:40:00.000Z",
     updatedAt: "2026-04-05T08:50:00.000Z",
   },
@@ -60,6 +86,8 @@ const seedMissions: Mission[] = [
     priority: "Critical",
     status: "Draft",
     serviceDate: "2026-04-05",
+    onTimeDeparture: false,
+    onTimeArrival: false,
     createdAt: "2026-04-05T09:00:00.000Z",
     updatedAt: "2026-04-05T09:10:00.000Z",
   },
@@ -71,6 +99,8 @@ const seedMissions: Mission[] = [
     serviceDate: "2026-04-05",
     assignedVehicleId: "veh-308",
     assignedDriverId: "drv-rose",
+    onTimeDeparture: true,
+    onTimeArrival: true,
     createdAt: "2026-04-05T10:00:00.000Z",
     updatedAt: "2026-04-05T10:05:00.000Z",
   },
@@ -82,6 +112,26 @@ function nowIso() {
 
 function randomId(prefix: string) {
   return `${prefix}-${crypto.randomUUID()}`;
+}
+
+function percentage(numerator: number, denominator: number) {
+  if (denominator === 0) {
+    return 0;
+  }
+
+  return Math.round((numerator / denominator) * 100);
+}
+
+function normalizeDate(date: string): string {
+  return date.slice(0, 10);
+}
+
+function routeMatchesDepot(route: string, depot: string): boolean {
+  const needle = depot.toLowerCase();
+  const [fromRaw, toRaw] = route.split("->");
+  const from = (fromRaw ?? "").trim().toLowerCase();
+  const to = (toRaw ?? "").trim().toLowerCase();
+  return from.includes(needle) || to.includes(needle);
 }
 
 export class MissionDomainError extends Error {
@@ -251,6 +301,88 @@ export class MissionStore {
   listExceptions(missionId: string): MissionExceptionEntry[] {
     this.getMissionOrThrow(missionId);
     return this.exceptionLog.get(missionId) ?? [];
+  }
+
+  summarizeKpis(filters: {
+    from: string;
+    to: string;
+    route?: string;
+    depot?: string;
+  }): MissionKpiSummary {
+    const missions = this.listMissions({
+      route: filters.route,
+      serviceDateFrom: filters.from,
+      serviceDateTo: filters.to,
+    }).filter((mission) =>
+      filters.depot ? routeMatchesDepot(mission.route, filters.depot) : true,
+    );
+
+    const completed = missions.filter((mission) => mission.status === "Completed").length;
+    const onTimeDeparture = missions.filter((mission) => mission.onTimeDeparture).length;
+    const onTimeArrival = missions.filter((mission) => mission.onTimeArrival).length;
+    const activeMissionCount = missions.filter(
+      (mission) => mission.status === "Assigned" || mission.status === "In Transit",
+    ).length;
+
+    const trends: MissionKpiTrendPoint[] = [];
+    let cursor = new Date(`${filters.from}T00:00:00.000Z`);
+    const end = new Date(`${filters.to}T00:00:00.000Z`);
+    while (cursor <= end) {
+      const day = cursor.toISOString().slice(0, 10);
+      const dayMissions = missions.filter((mission) => mission.serviceDate === day);
+      trends.push({
+        date: day,
+        totalMissions: dayMissions.length,
+        completionRate: percentage(
+          dayMissions.filter((mission) => mission.status === "Completed").length,
+          dayMissions.length,
+        ),
+        onTimeDepartureRate: percentage(
+          dayMissions.filter((mission) => mission.onTimeDeparture).length,
+          dayMissions.length,
+        ),
+        onTimeArrivalRate: percentage(
+          dayMissions.filter((mission) => mission.onTimeArrival).length,
+          dayMissions.length,
+        ),
+      });
+      cursor = new Date(cursor.getTime() + 24 * 60 * 60 * 1000);
+    }
+
+    const missionIds = new Set(missions.map((mission) => mission.id));
+    const delayReasonMix: Record<MissionExceptionType, number> = {
+      delay: 0,
+      breakdown: 0,
+      reroute: 0,
+      no_show: 0,
+    };
+
+    for (const exceptions of this.exceptionLog.values()) {
+      for (const exception of exceptions) {
+        if (!missionIds.has(exception.missionId)) {
+          continue;
+        }
+
+        const date = normalizeDate(exception.timestamp);
+        if (date < filters.from || date > filters.to) {
+          continue;
+        }
+
+        delayReasonMix[exception.type] += 1;
+      }
+    }
+
+    return {
+      snapshot: {
+        completionRate: percentage(completed, missions.length),
+        onTimeDepartureRate: percentage(onTimeDeparture, missions.length),
+        onTimeArrivalRate: percentage(onTimeArrival, missions.length),
+        activeMissionCount,
+        generatedAt: nowIso(),
+      },
+      trends,
+      delayReasonMix,
+    };
   }
 }
 

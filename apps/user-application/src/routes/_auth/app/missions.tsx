@@ -13,6 +13,14 @@ import {
   SelectValue,
 } from "@workspace/ui/components/select";
 import { Textarea } from "@workspace/ui/components/textarea";
+import type {
+  Mission,
+  MissionAssignmentEvent,
+  MissionExceptionEvent,
+  MissionExceptionReason,
+  MissionStatus,
+  MissionStatusEvent,
+} from "@/core/contracts/nafa-operations";
 import {
   buildMissionTimeline,
   canAssignMission,
@@ -21,12 +29,6 @@ import {
   formatExceptionReason,
   getNextMissionStatuses,
   missionsSeed,
-  type Mission,
-  type MissionAssignmentEvent,
-  type MissionExceptionEvent,
-  type MissionExceptionReason,
-  type MissionStatus,
-  type MissionStatusEvent,
 } from "@/core/contracts/nafa-operations";
 
 export const Route = createFileRoute("/_auth/app/missions")({
@@ -49,6 +51,19 @@ const exceptionReasonOptions: Array<MissionExceptionReason> = [
 ];
 
 const defaultMission = missionsSeed[0];
+
+function nextMissionId(missions: Array<Mission>): string {
+  const maxNumericPart = missions.reduce((max, mission) => {
+    const numericPart = Number.parseInt(mission.id.replace(/^M-/, ""), 10);
+    if (Number.isNaN(numericPart)) {
+      return max;
+    }
+
+    return Math.max(max, numericPart);
+  }, 0);
+
+  return `M-${maxNumericPart + 1}`;
+}
 
 function RouteComponent() {
   const vehicleOptions = fleetAssetsSeed.filter((asset) => asset.kind === "vehicle");
@@ -177,7 +192,7 @@ function RouteComponent() {
       return;
     }
 
-    const id = `M-${Math.floor(1000 + Math.random() * 9000)}`;
+    const id = nextMissionId(missions);
     const timestamp = new Date().toISOString();
 
     const mission: Mission = {
@@ -327,7 +342,10 @@ function RouteComponent() {
               value={newServiceDate}
               onChange={(event) => setNewServiceDate(event.target.value)}
             />
-            <Select value={intakeVehicleId} onValueChange={(value) => setIntakeVehicleId(value)}>
+            <Select
+              value={intakeVehicleId}
+              onValueChange={(value) => setIntakeVehicleId(value ?? "")}
+            >
               <SelectTrigger>
                 <SelectValue />
               </SelectTrigger>
@@ -342,7 +360,10 @@ function RouteComponent() {
           </div>
 
           <div className="grid gap-3 md:grid-cols-[minmax(0,1fr)_auto_auto]">
-            <Select value={intakeDriverId} onValueChange={(value) => setIntakeDriverId(value)}>
+            <Select
+              value={intakeDriverId}
+              onValueChange={(value) => setIntakeDriverId(value ?? "")}
+            >
               <SelectTrigger>
                 <SelectValue />
               </SelectTrigger>
@@ -393,7 +414,9 @@ function RouteComponent() {
           />
           <Select
             value={filters.driverId}
-            onValueChange={(value) => setFilters((previous) => ({ ...previous, driverId: value }))}
+            onValueChange={(value) =>
+              setFilters((previous) => ({ ...previous, driverId: value ?? "all" }))
+            }
           >
             <SelectTrigger>
               <SelectValue />
@@ -409,7 +432,9 @@ function RouteComponent() {
           </Select>
           <Select
             value={filters.vehicleId}
-            onValueChange={(value) => setFilters((previous) => ({ ...previous, vehicleId: value }))}
+            onValueChange={(value) =>
+              setFilters((previous) => ({ ...previous, vehicleId: value ?? "all" }))
+            }
           >
             <SelectTrigger>
               <SelectValue />

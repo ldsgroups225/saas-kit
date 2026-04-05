@@ -1,13 +1,20 @@
 import { describe, expect, it } from "vitest";
 import {
   buildMissionTimeline,
+  buildThirtyDayKpiTrend,
   canAssignMission,
   filterMissions,
   formatExceptionReason,
   getNextMissionStatuses,
+  summarizeDelayReasonMix,
   summarizeMissionKpis,
 } from "./nafa-operations";
-import type { FleetAsset, Mission, MissionTimelineInput } from "./nafa-operations";
+import type {
+  FleetAsset,
+  Mission,
+  MissionExceptionEvent,
+  MissionTimelineInput,
+} from "./nafa-operations";
 
 describe("nafa operations contracts", () => {
   it("enforces mission lifecycle transitions", () => {
@@ -164,5 +171,75 @@ describe("nafa operations contracts", () => {
     expect(formatExceptionReason("breakdown")).toBe("Breakdown");
     expect(formatExceptionReason("reroute")).toBe("Reroute");
     expect(formatExceptionReason("no_show")).toBe("No Show");
+  });
+
+  it("builds a 30-day KPI trend ending on selected date", () => {
+    const missions: Array<Mission> = [
+      {
+        id: "m-1",
+        route: "Abidjan -> Yamoussoukro",
+        priority: "High",
+        status: "Completed",
+        serviceDate: "2026-04-05",
+        assignedVehicleId: "veh-1",
+        assignedDriverId: "drv-1",
+        onTimeDeparture: true,
+        onTimeArrival: true,
+        updatedAt: "2026-04-05T09:00:00.000Z",
+      },
+      {
+        id: "m-2",
+        route: "Bouake -> Korhogo",
+        priority: "Normal",
+        status: "In Transit",
+        serviceDate: "2026-04-04",
+        assignedVehicleId: "veh-2",
+        assignedDriverId: "drv-2",
+        onTimeDeparture: false,
+        onTimeArrival: false,
+        updatedAt: "2026-04-04T10:00:00.000Z",
+      },
+    ];
+
+    const trend = buildThirtyDayKpiTrend(missions, "2026-04-05");
+
+    expect(trend).toHaveLength(30);
+    expect(trend[0]?.date).toBe("2026-03-07");
+    expect(trend[29]?.date).toBe("2026-04-05");
+    expect(trend[29]?.totalMissions).toBe(1);
+  });
+
+  it("summarizes delay reason mix for KPI dashboard", () => {
+    const exceptions: Array<MissionExceptionEvent> = [
+      {
+        id: "e-1",
+        missionId: "m-1",
+        reason: "delay",
+        note: "Road work",
+        timestamp: "2026-04-05T09:00:00.000Z",
+      },
+      {
+        id: "e-2",
+        missionId: "m-2",
+        reason: "delay",
+        note: "Traffic",
+        timestamp: "2026-04-05T10:00:00.000Z",
+      },
+      {
+        id: "e-3",
+        missionId: "m-3",
+        reason: "breakdown",
+        note: "Flat tire",
+        timestamp: "2026-04-05T11:00:00.000Z",
+      },
+    ];
+
+    const mix = summarizeDelayReasonMix(exceptions);
+    expect(mix).toEqual({
+      delay: 2,
+      breakdown: 1,
+      reroute: 0,
+      no_show: 0,
+    });
   });
 });

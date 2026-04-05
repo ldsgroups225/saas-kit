@@ -7,6 +7,31 @@ async function readJson<T>(response: Response): Promise<T> {
 }
 
 describe("missions api", () => {
+  it("returns KPI summary snapshot with trend points and delay reason mix", async () => {
+    const app = createApp(new MissionStore());
+    const response = await app.request(
+      "/api/kpi/missions/summary?from=2026-03-07&to=2026-04-05",
+    );
+
+    expect(response.status).toBe(200);
+    const body = await readJson<{
+      snapshot: {
+        completionRate: number;
+        onTimeDepartureRate: number;
+        onTimeArrivalRate: number;
+        activeMissionCount: number;
+        generatedAt: string;
+      };
+      delayReasonMix: Record<string, number>;
+      trends: Array<{ date: string }>;
+    }>(response);
+    expect(body.snapshot).toBeDefined();
+    expect(body.snapshot.activeMissionCount).toBeGreaterThanOrEqual(0);
+    expect(new Date(body.snapshot.generatedAt).toString()).not.toBe("Invalid Date");
+    expect(Object.keys(body.delayReasonMix).length).toBeGreaterThan(0);
+    expect(body.trends.length).toBe(30);
+  });
+
   it("returns filtered missions by route, driver, vehicle and date window", async () => {
     const app = createApp(new MissionStore());
     const response = await app.request(

@@ -20,10 +20,18 @@ const missionStatusSchema = z.enum([
 
 const missionFilterSchema = z.object({
   route: z.string().optional(),
+  depot: z.string().optional(),
   driverId: z.string().optional(),
   vehicleId: z.string().optional(),
   serviceDateFrom: z.string().optional(),
   serviceDateTo: z.string().optional(),
+});
+
+const missionKpiSummaryFilterSchema = z.object({
+  from: z.string().regex(/^\d{4}-\d{2}-\d{2}$/),
+  to: z.string().regex(/^\d{4}-\d{2}-\d{2}$/),
+  route: z.string().optional(),
+  depot: z.string().optional(),
 });
 
 const missionStatusUpdateSchema = z.object({
@@ -83,6 +91,7 @@ function errorMessage(error: unknown): string {
     const status = c.req.query("status");
     const parsedFilters = missionFilterSchema.safeParse({
       route: c.req.query("route"),
+      depot: c.req.query("depot"),
       driverId: c.req.query("driverId"),
       vehicleId: c.req.query("vehicleId"),
       serviceDateFrom: c.req.query("serviceDateFrom"),
@@ -188,6 +197,21 @@ function errorMessage(error: unknown): string {
     } catch (error) {
       return c.json({ error: errorMessage(error) }, toHttpErrorStatus(error));
     }
+  });
+
+  app.get("/api/kpi/missions/summary", (c) => {
+    const parsedFilters = missionKpiSummaryFilterSchema.safeParse({
+      from: c.req.query("from"),
+      to: c.req.query("to"),
+      route: c.req.query("route"),
+      depot: c.req.query("depot"),
+    });
+
+    if (!parsedFilters.success) {
+      return c.json({ error: "Invalid KPI query parameters" }, 400);
+    }
+
+    return c.json(missionStore.summarizeKpis(parsedFilters.data));
   });
 
   return app;

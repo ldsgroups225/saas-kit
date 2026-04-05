@@ -80,6 +80,14 @@ export interface MissionTimelineItem {
   description: string;
 }
 
+export interface MissionKpiTrendPoint {
+  date: string;
+  totalMissions: number;
+  completionRate: number;
+  onTimeDepartureRate: number;
+  onTimeArrivalRate: number;
+}
+
 export interface AssignmentCheckResult {
   allowed: boolean;
   reason?: string;
@@ -226,6 +234,55 @@ export function buildMissionTimeline(input: MissionTimelineInput): Array<Mission
     }));
 
   return [...statusItems, ...assignmentItems, ...exceptionItems].sort((a, b) => (a.timestamp > b.timestamp ? -1 : 1));
+}
+
+function addDays(date: Date, days: number): Date {
+  return new Date(date.getTime() + days * 24 * 60 * 60 * 1000);
+}
+
+export function buildThirtyDayKpiTrend(
+  missions: Array<Mission>,
+  endDate: string = new Date().toISOString().slice(0, 10),
+): Array<MissionKpiTrendPoint> {
+  const end = new Date(`${endDate}T00:00:00.000Z`);
+  const start = addDays(end, -29);
+  const trend: Array<MissionKpiTrendPoint> = [];
+
+  for (let cursor = new Date(start); cursor <= end; cursor = addDays(cursor, 1)) {
+    const date = cursor.toISOString().slice(0, 10);
+    const dayMissions = missions.filter((mission) => mission.serviceDate === date);
+    const total = dayMissions.length;
+    const completed = dayMissions.filter((mission) => mission.status === "Completed").length;
+    const onTimeDeparture = dayMissions.filter((mission) => mission.onTimeDeparture).length;
+    const onTimeArrival = dayMissions.filter((mission) => mission.onTimeArrival).length;
+
+    trend.push({
+      date,
+      totalMissions: total,
+      completionRate: percentage(completed, total),
+      onTimeDepartureRate: percentage(onTimeDeparture, total),
+      onTimeArrivalRate: percentage(onTimeArrival, total),
+    });
+  }
+
+  return trend;
+}
+
+export function summarizeDelayReasonMix(
+  exceptions: Array<MissionExceptionEvent>,
+): Record<MissionExceptionReason, number> {
+  const mix: Record<MissionExceptionReason, number> = {
+    delay: 0,
+    breakdown: 0,
+    reroute: 0,
+    no_show: 0,
+  };
+
+  for (const exception of exceptions) {
+    mix[exception.reason] += 1;
+  }
+
+  return mix;
 }
 
 export const fleetAssetsSeed: Array<FleetAsset> = [
