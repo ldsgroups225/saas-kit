@@ -7,7 +7,8 @@ import {
   getMissionStore,
 } from "../domain/missions";
 
-export function createApp(missionStore: MissionStore = getMissionStore()) {
+export function createApp(missionStore?: MissionStore) {
+  const resolvedMissionStore = missionStore ?? getMissionStore();
   const app = new Hono<{ Bindings: Env }>();
 
 const missionStatusSchema = z.enum([
@@ -103,7 +104,7 @@ function errorMessage(error: unknown): string {
       return c.json({ error: "Invalid query parameters" }, 400);
     }
 
-    const list = missionStore.listMissions(parsedFilters.data);
+    const list = resolvedMissionStore.listMissions(parsedFilters.data);
     if (!status) {
       return c.json({ missions: list });
     }
@@ -118,7 +119,7 @@ function errorMessage(error: unknown): string {
 
   app.get("/api/missions/:missionId", (c) => {
     try {
-      const mission = missionStore.getMissionOrThrow(c.req.param("missionId"));
+      const mission = resolvedMissionStore.getMissionOrThrow(c.req.param("missionId"));
       return c.json({ mission });
     } catch (error) {
       return c.json({ error: errorMessage(error) }, toHttpErrorStatus(error));
@@ -134,7 +135,7 @@ function errorMessage(error: unknown): string {
     }
 
     try {
-      const mission = missionStore.updateStatus({
+      const mission = resolvedMissionStore.updateStatus({
         missionId: c.req.param("missionId"),
         nextStatus: parsedBody.data.status,
         actorId: parsedBody.data.actorId,
@@ -154,7 +155,7 @@ function errorMessage(error: unknown): string {
     }
 
     try {
-      const result = missionStore.assignMission({
+      const result = resolvedMissionStore.assignMission({
         missionId: c.req.param("missionId"),
         ...parsedBody.data,
       });
@@ -166,7 +167,7 @@ function errorMessage(error: unknown): string {
 
   app.get("/api/missions/:missionId/assignment-history", (c) => {
     try {
-      const history = missionStore.listAssignmentHistory(c.req.param("missionId"));
+      const history = resolvedMissionStore.listAssignmentHistory(c.req.param("missionId"));
       return c.json({ history });
     } catch (error) {
       return c.json({ error: errorMessage(error) }, toHttpErrorStatus(error));
@@ -175,7 +176,7 @@ function errorMessage(error: unknown): string {
 
   app.get("/api/missions/:missionId/status-history", (c) => {
     try {
-      const history = missionStore.listStatusHistory(c.req.param("missionId"));
+      const history = resolvedMissionStore.listStatusHistory(c.req.param("missionId"));
       return c.json({ history });
     } catch (error) {
       return c.json({ error: errorMessage(error) }, toHttpErrorStatus(error));
@@ -191,7 +192,7 @@ function errorMessage(error: unknown): string {
     }
 
     try {
-      const exception = missionStore.addException({
+      const exception = resolvedMissionStore.addException({
         missionId: c.req.param("missionId"),
         ...parsedBody.data,
       });
@@ -203,7 +204,7 @@ function errorMessage(error: unknown): string {
 
   app.get("/api/missions/:missionId/exceptions", (c) => {
     try {
-      const exceptions = missionStore.listExceptions(c.req.param("missionId"));
+      const exceptions = resolvedMissionStore.listExceptions(c.req.param("missionId"));
       return c.json({ exceptions });
     } catch (error) {
       return c.json({ error: errorMessage(error) }, toHttpErrorStatus(error));
@@ -212,7 +213,7 @@ function errorMessage(error: unknown): string {
 
   app.get("/api/missions/:missionId/timeline", (c) => {
     try {
-      const events = missionStore.getMissionTimeline(c.req.param("missionId"));
+      const events = resolvedMissionStore.getMissionTimeline(c.req.param("missionId"));
       return c.json({ events });
     } catch (error) {
       return c.json({ error: errorMessage(error) }, toHttpErrorStatus(error));
@@ -231,10 +232,24 @@ function errorMessage(error: unknown): string {
       return c.json({ error: "Invalid KPI query parameters" }, 400);
     }
 
-    return c.json(missionStore.summarizeKpis(parsedFilters.data));
+    return c.json(resolvedMissionStore.summarizeKpis(parsedFilters.data));
   });
 
   return app;
 }
 
-export const app = createApp();
+let appInstance: ReturnType<typeof createApp> | undefined;
+
+function getAppInstance() {
+  if (!appInstance) {
+    appInstance = createApp();
+  }
+
+  return appInstance;
+}
+
+export const app = {
+  fetch(request: Request, env?: Env, executionCtx?: ExecutionContext) {
+    return getAppInstance().fetch(request, env, executionCtx);
+  },
+};
