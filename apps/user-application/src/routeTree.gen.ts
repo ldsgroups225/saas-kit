@@ -16,6 +16,9 @@ import { Route as StaticDocsIndexRouteImport } from './routes/_static/docs/index
 import { Route as AuthAppIndexRouteImport } from './routes/_auth/app/index'
 import { Route as ApiAuthSplatRouteImport } from './routes/api/auth.$'
 import { Route as StaticDocsNameRouteImport } from './routes/_static/docs/$name'
+import { Route as AuthAppMissionsRouteImport } from './routes/_auth/app/missions'
+import { Route as AuthAppKpiRouteImport } from './routes/_auth/app/kpi'
+import { Route as AuthAppFleetRouteImport } from './routes/_auth/app/fleet'
 import { Route as AuthAppPolarSubscriptionsRouteImport } from './routes/_auth/app/polar/subscriptions'
 import { Route as AuthAppPolarPortalRouteImport } from './routes/_auth/app/polar/portal'
 import { Route as AuthAppPolarCheckoutSuccessRouteImport } from './routes/_auth/app/polar/checkout.success'
@@ -53,6 +56,21 @@ const StaticDocsNameRoute = StaticDocsNameRouteImport.update({
   path: '/docs/$name',
   getParentRoute: () => StaticRouteRoute,
 } as any)
+const AuthAppMissionsRoute = AuthAppMissionsRouteImport.update({
+  id: '/app/missions',
+  path: '/app/missions',
+  getParentRoute: () => AuthRouteRoute,
+} as any)
+const AuthAppKpiRoute = AuthAppKpiRouteImport.update({
+  id: '/app/kpi',
+  path: '/app/kpi',
+  getParentRoute: () => AuthRouteRoute,
+} as any)
+const AuthAppFleetRoute = AuthAppFleetRouteImport.update({
+  id: '/app/fleet',
+  path: '/app/fleet',
+  getParentRoute: () => AuthRouteRoute,
+} as any)
 const AuthAppPolarSubscriptionsRoute =
   AuthAppPolarSubscriptionsRouteImport.update({
     id: '/app/polar/subscriptions',
@@ -73,6 +91,9 @@ const AuthAppPolarCheckoutSuccessRoute =
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/app/fleet': typeof AuthAppFleetRoute
+  '/app/kpi': typeof AuthAppKpiRoute
+  '/app/missions': typeof AuthAppMissionsRoute
   '/docs/$name': typeof StaticDocsNameRoute
   '/api/auth/$': typeof ApiAuthSplatRoute
   '/app': typeof AuthAppIndexRoute
@@ -83,6 +104,9 @@ export interface FileRoutesByFullPath {
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/app/fleet': typeof AuthAppFleetRoute
+  '/app/kpi': typeof AuthAppKpiRoute
+  '/app/missions': typeof AuthAppMissionsRoute
   '/docs/$name': typeof StaticDocsNameRoute
   '/api/auth/$': typeof ApiAuthSplatRoute
   '/app': typeof AuthAppIndexRoute
@@ -96,6 +120,9 @@ export interface FileRoutesById {
   '/': typeof IndexRoute
   '/_auth': typeof AuthRouteRouteWithChildren
   '/_static': typeof StaticRouteRouteWithChildren
+  '/_auth/app/fleet': typeof AuthAppFleetRoute
+  '/_auth/app/kpi': typeof AuthAppKpiRoute
+  '/_auth/app/missions': typeof AuthAppMissionsRoute
   '/_static/docs/$name': typeof StaticDocsNameRoute
   '/api/auth/$': typeof ApiAuthSplatRoute
   '/_auth/app/': typeof AuthAppIndexRoute
@@ -108,6 +135,9 @@ export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
     | '/'
+    | '/app/fleet'
+    | '/app/kpi'
+    | '/app/missions'
     | '/docs/$name'
     | '/api/auth/$'
     | '/app'
@@ -118,6 +148,9 @@ export interface FileRouteTypes {
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
+    | '/app/fleet'
+    | '/app/kpi'
+    | '/app/missions'
     | '/docs/$name'
     | '/api/auth/$'
     | '/app'
@@ -130,6 +163,9 @@ export interface FileRouteTypes {
     | '/'
     | '/_auth'
     | '/_static'
+    | '/_auth/app/fleet'
+    | '/_auth/app/kpi'
+    | '/_auth/app/missions'
     | '/_static/docs/$name'
     | '/api/auth/$'
     | '/_auth/app/'
@@ -197,6 +233,27 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof StaticDocsNameRouteImport
       parentRoute: typeof StaticRouteRoute
     }
+    '/_auth/app/missions': {
+      id: '/_auth/app/missions'
+      path: '/app/missions'
+      fullPath: '/app/missions'
+      preLoaderRoute: typeof AuthAppMissionsRouteImport
+      parentRoute: typeof AuthRouteRoute
+    }
+    '/_auth/app/kpi': {
+      id: '/_auth/app/kpi'
+      path: '/app/kpi'
+      fullPath: '/app/kpi'
+      preLoaderRoute: typeof AuthAppKpiRouteImport
+      parentRoute: typeof AuthRouteRoute
+    }
+    '/_auth/app/fleet': {
+      id: '/_auth/app/fleet'
+      path: '/app/fleet'
+      fullPath: '/app/fleet'
+      preLoaderRoute: typeof AuthAppFleetRouteImport
+      parentRoute: typeof AuthRouteRoute
+    }
     '/_auth/app/polar/subscriptions': {
       id: '/_auth/app/polar/subscriptions'
       path: '/app/polar/subscriptions'
@@ -222,6 +279,9 @@ declare module '@tanstack/react-router' {
 }
 
 interface AuthRouteRouteChildren {
+  AuthAppFleetRoute: typeof AuthAppFleetRoute
+  AuthAppKpiRoute: typeof AuthAppKpiRoute
+  AuthAppMissionsRoute: typeof AuthAppMissionsRoute
   AuthAppIndexRoute: typeof AuthAppIndexRoute
   AuthAppPolarPortalRoute: typeof AuthAppPolarPortalRoute
   AuthAppPolarSubscriptionsRoute: typeof AuthAppPolarSubscriptionsRoute
@@ -229,6 +289,9 @@ interface AuthRouteRouteChildren {
 }
 
 const AuthRouteRouteChildren: AuthRouteRouteChildren = {
+  AuthAppFleetRoute: AuthAppFleetRoute,
+  AuthAppKpiRoute: AuthAppKpiRoute,
+  AuthAppMissionsRoute: AuthAppMissionsRoute,
   AuthAppIndexRoute: AuthAppIndexRoute,
   AuthAppPolarPortalRoute: AuthAppPolarPortalRoute,
   AuthAppPolarSubscriptionsRoute: AuthAppPolarSubscriptionsRoute,
