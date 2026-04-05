@@ -36,6 +36,7 @@ const missionKpiSummaryFilterSchema = z.object({
 
 const missionStatusUpdateSchema = z.object({
   status: missionStatusSchema,
+  actorId: z.string().min(1),
 });
 
 const missionAssignmentSchema = z.object({
@@ -46,7 +47,7 @@ const missionAssignmentSchema = z.object({
 
 const missionExceptionSchema = z.object({
   type: z.enum(["delay", "breakdown", "reroute", "no_show"]),
-  description: z.string().min(1),
+  description: z.string().optional().default(""),
   actorId: z.string().min(1),
 });
 
@@ -136,6 +137,7 @@ function errorMessage(error: unknown): string {
       const mission = missionStore.updateStatus({
         missionId: c.req.param("missionId"),
         nextStatus: parsedBody.data.status,
+        actorId: parsedBody.data.actorId,
       });
       return c.json({ mission });
     } catch (error) {
@@ -171,6 +173,15 @@ function errorMessage(error: unknown): string {
     }
   });
 
+  app.get("/api/missions/:missionId/status-history", (c) => {
+    try {
+      const history = missionStore.listStatusHistory(c.req.param("missionId"));
+      return c.json({ history });
+    } catch (error) {
+      return c.json({ error: errorMessage(error) }, toHttpErrorStatus(error));
+    }
+  });
+
   app.post("/api/missions/:missionId/exceptions", async (c) => {
     const body = await c.req.json().catch(() => null);
     const parsedBody = missionExceptionSchema.safeParse(body);
@@ -194,6 +205,15 @@ function errorMessage(error: unknown): string {
     try {
       const exceptions = missionStore.listExceptions(c.req.param("missionId"));
       return c.json({ exceptions });
+    } catch (error) {
+      return c.json({ error: errorMessage(error) }, toHttpErrorStatus(error));
+    }
+  });
+
+  app.get("/api/missions/:missionId/timeline", (c) => {
+    try {
+      const events = missionStore.getMissionTimeline(c.req.param("missionId"));
+      return c.json({ events });
     } catch (error) {
       return c.json({ error: errorMessage(error) }, toHttpErrorStatus(error));
     }

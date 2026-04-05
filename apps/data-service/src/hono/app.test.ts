@@ -53,7 +53,7 @@ describe("missions api", () => {
       {
         method: "PATCH",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ status: "Completed" }),
+        body: JSON.stringify({ status: "Completed", actorId: "dispatcher-qa-01" }),
       },
     );
 
@@ -130,5 +130,74 @@ describe("missions api", () => {
     expect(exceptionEntry?.type).toBe("delay");
     expect(exceptionEntry?.description).toContain("35min");
     expect(exceptionEntry?.actorId).toBe("ops-lead-02");
+  });
+
+  it("records append-only status history with actor metadata and mission timeline retrieval", async () => {
+    const app = createApp(new MissionStore());
+
+    const assignResponse = await app.request("/api/missions/M-2402/status", {
+      method: "PATCH",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ status: "Assigned", actorId: "dispatcher-01" }),
+    });
+    expect(assignResponse.status).toBe(200);
+
+    const transitResponse = await app.request("/api/missions/M-2402/status", {
+      method: "PATCH",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ status: "In Transit", actorId: "dispatcher-01" }),
+    });
+    expect(transitResponse.status).toBe(200);
+
+    const statusHistoryResponse = await app.request("/api/missions/M-2402/status-history");
+    expect(statusHistoryResponse.status).toBe(200);
+    const statusHistoryBody = await readJson<{
+      history: Array<{
+        missionId: string;
+        fromStatus?: string;
+        toStatus: string;
+        actorId: string;
+        timestamp: string;
+      }>;
+    }>(statusHistoryResponse);
+    expect(statusHistoryBody.history.length).toBeGreaterThanOrEqual(2);
+
+    const lastStatusEvent = statusHistoryBody.history[statusHistoryBody.history.length - 1];
+    expect(lastStatusEvent).toBeDefined();
+    expect(lastStatusEvent?.missionId).toBe("M-2402");
+    expect(lastStatusEvent?.fromStatus).toBe("Assigned");
+    expect(lastStatusEvent?.toStatus).toBe("In Transit");
+    expect(lastStatusEvent?.actorId).toBe("dispatcher-01");
+    expect(new Date(lastStatusEvent?.timestamp ?? "").toString()).not.toBe("Invalid Date");
+
+    const timelineResponse = await app.request("/api/missions/M-2402/timeline");
+    expect(timelineResponse.status).toBe(200);
+    const timelineBody = await readJson<{
+      events: Array<{ eventType: string; actorId?: string; missionId: string }>;
+    }>(timelineResponse);
+    expect(timelineBody.events.some((event) => event.eventType === "status_changed")).toBe(true);
+    expect(timelineBody.events.some((event) => event.actorId === "dispatcher-01")).toBe(true);
+    expect(timelineBody.events.every((event) => event.missionId === "M-2402")).toBe(true);
+  });
+
+  it("accepts exception payloads with required reason code and optional notes", async () => {
+    const app = createApp(new MissionStore());
+
+    const response = await app.request("/api/missions/M-2403/exceptions", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        type: "breakdown",
+        actorId: "ops-lead-02",
+      }),
+    });
+
+    expect(response.status).toBe(201);
+    const body = await readJson<{
+      exception: { type: string; description: string; actorId: string };
+    }>(response);
+    expect(body.exception.type).toBe("breakdown");
+    expect(body.exception.description).toBe("");
+    expect(body.exception.actorId).toBe("ops-lead-02");
   });
 });

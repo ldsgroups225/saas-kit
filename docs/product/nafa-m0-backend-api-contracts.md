@@ -98,7 +98,7 @@ export interface FleetAsset {
 - Request body
 
 ```json
-{ "status": "Assigned" }
+{ "status": "Assigned", "actorId": "dispatcher-01" }
 ```
 
 - Response `200`
@@ -133,6 +133,20 @@ export interface FleetAsset {
 { "history": [AssignmentHistoryEntry] }
 ```
 
+- `GET /api/missions/:missionId/status-history`
+- Response `200`
+
+```json
+{ "history": [StatusHistoryEntry] }
+```
+
+- `GET /api/missions/:missionId/timeline`
+- Response `200`
+
+```json
+{ "events": [MissionKpiEvent] }
+```
+
 ### Exceptions
 - `POST /api/missions/:missionId/exceptions`
 - Request body
@@ -140,6 +154,8 @@ export interface FleetAsset {
 ```json
 { "type": "delay", "description": "Bridge traffic slowdown +35min", "actorId": "ops-lead-02" }
 ```
+
+- `description` is optional note text; reason `type` is always required.
 
 - Response `201`
 

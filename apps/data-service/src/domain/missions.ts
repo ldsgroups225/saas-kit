@@ -27,6 +27,15 @@ export interface AssignmentHistoryEntry {
   timestamp: string;
 }
 
+export interface StatusHistoryEntry {
+  id: string;
+  missionId: string;
+  fromStatus?: MissionStatus;
+  toStatus: MissionStatus;
+  actorId: string;
+  timestamp: string;
+}
+
 export interface MissionExceptionEntry {
   id: string;
   missionId: string;
@@ -56,6 +65,15 @@ export interface MissionKpiSummary {
   snapshot: MissionKpiSnapshot;
   trends: MissionKpiTrendPoint[];
   delayReasonMix: Record<MissionExceptionType, number>;
+}
+
+export interface MissionTimelineEvent {
+  id: string;
+  missionId: string;
+  eventType: "status_changed" | "assignment_changed" | "exception_logged";
+  actorId: string;
+  timestamp: string;
+  payload: Record<string, string>;
 }
 
 const lifecycleMap: Record<MissionStatus, MissionStatus[]> = {
@@ -147,11 +165,21 @@ export class MissionDomainError extends Error {
 export class MissionStore {
   private readonly missions = new Map<string, Mission>();
   private readonly assignmentHistory = new Map<string, AssignmentHistoryEntry[]>();
+  private readonly statusHistory = new Map<string, StatusHistoryEntry[]>();
   private readonly exceptionLog = new Map<string, MissionExceptionEntry[]>();
 
   constructor(initialMissions: Mission[] = seedMissions) {
     for (const mission of initialMissions) {
       this.missions.set(mission.id, { ...mission });
+      this.statusHistory.set(mission.id, [
+        {
+          id: randomId("st"),
+          missionId: mission.id,
+          toStatus: mission.status,
+          actorId: "system",
+          timestamp: mission.updatedAt,
+        },
+      ]);
     }
   }
 
@@ -200,24 +228,45 @@ export class MissionStore {
   updateStatus({
     missionId,
     nextStatus,
+    actorId,
   }: {
     missionId: string;
     nextStatus: MissionStatus;
+    actorId: string;
   }): Mission {
     const mission = this.getMissionOrThrow(missionId);
+    const previousStatus = mission.status;
 
-    const allowed = lifecycleMap[mission.status];
+    const allowed = lifecycleMap[previousStatus];
     if (!allowed.includes(nextStatus)) {
       throw new MissionDomainError(
-        `Invalid transition from '${mission.status}' to '${nextStatus}'`,
+        `Invalid transition from '${previousStatus}' to '${nextStatus}'`,
         "invalid_transition",
       );
     }
 
+    const timestamp = nowIso();
     mission.status = nextStatus;
-    mission.updatedAt = nowIso();
+    mission.updatedAt = timestamp;
+
+    const currentHistory = this.statusHistory.get(missionId) ?? [];
+    currentHistory.push({
+      id: randomId("st"),
+      missionId,
+      fromStatus: previousStatus,
+      toStatus: nextStatus,
+      actorId,
+      timestamp,
+    });
+    this.statusHistory.set(missionId, currentHistory);
+
     this.missions.set(mission.id, mission);
     return mission;
+  }
+
+  listStatusHistory(missionId: string): StatusHistoryEntry[] {
+    this.getMissionOrThrow(missionId);
+    return this.statusHistory.get(missionId) ?? [];
   }
 
   assignMission({
@@ -274,12 +323,12 @@ export class MissionStore {
   addException({
     missionId,
     type,
-    description,
+    description = "",
     actorId,
   }: {
     missionId: string;
     type: MissionExceptionType;
-    description: string;
+    description?: string;
     actorId: string;
   }): MissionExceptionEntry {
     this.getMissionOrThrow(missionId);
@@ -301,6 +350,50 @@ export class MissionStore {
   listExceptions(missionId: string): MissionExceptionEntry[] {
     this.getMissionOrThrow(missionId);
     return this.exceptionLog.get(missionId) ?? [];
+  }
+
+  getMissionTimeline(missionId: string): MissionTimelineEvent[] {
+    this.getMissionOrThrow(missionId);
+
+    const statusEvents = (this.statusHistory.get(missionId) ?? []).map((event) => ({
+      id: event.id,
+      missionId: event.missionId,
+      eventType: "status_changed" as const,
+      actorId: event.actorId,
+      timestamp: event.timestamp,
+      payload: {
+        fromStatus: event.fromStatus ?? "",
+        toStatus: event.toStatus,
+      },
+    }));
+
+    const assignmentEvents = (this.assignmentHistory.get(missionId) ?? []).map((event) => ({
+      id: event.id,
+      missionId: event.missionId,
+      eventType: "assignment_changed" as const,
+      actorId: event.actorId,
+      timestamp: event.timestamp,
+      payload: {
+        vehicleId: event.vehicleId,
+        driverId: event.driverId,
+      },
+    }));
+
+    const exceptionEvents = (this.exceptionLog.get(missionId) ?? []).map((event) => ({
+      id: event.id,
+      missionId: event.missionId,
+      eventType: "exception_logged" as const,
+      actorId: event.actorId,
+      timestamp: event.timestamp,
+      payload: {
+        type: event.type,
+        description: event.description,
+      },
+    }));
+
+    return [...statusEvents, ...assignmentEvents, ...exceptionEvents].sort((a, b) =>
+      a.timestamp > b.timestamp ? 1 : -1,
+    );
   }
 
   summarizeKpis(filters: {
