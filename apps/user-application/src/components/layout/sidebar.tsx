@@ -16,7 +16,7 @@ const navigationItems: Array<NavigationItem> = [
   {
     name: "Dashboard",
     icon: IconHome,
-    href: "/dashboard",
+    href: "/app",
   },
 ];
 
@@ -60,8 +60,9 @@ export function Sidebar({ className }: SidebarProps) {
         <ScrollArea className="flex-1 px-3 py-4">
           <nav className="space-y-2">
             {navigationItems.map((item) => {
-              const isActive = currentPath === item.href || 
-                (item.href !== "/dashboard" && currentPath.startsWith(item.href));
+              const isActive =
+                currentPath === item.href ||
+                (item.href !== "/app" && currentPath.startsWith(item.href));
               
               return (
                 <Button
